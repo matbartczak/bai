@@ -1,0 +1,16 @@
+# .gitignore
+
+# Python
+*.pyc
+__pycache__/
+db.sqlite3
+*.env
+*.log
+.venv/
+
+# Node / frontend
+node_modules/
+build/
+
+# Docker
+*.env
