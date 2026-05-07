@@ -1,12 +1,17 @@
 from rest_framework import serializers, validators
 from .models import User
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import Group
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    is_superuser = serializers.BooleanField(read_only=True)
+
+    groups = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields =("id", "email", "username","is_superuser")
+        fields =("id", "email", "username","groups")
+    
+    def get_groups(self, obj):
+        return [group.name for group in obj.groups.all()]
 
 class RegisterUserSerializer(serializers.ModelSerializer):
 
@@ -24,6 +29,9 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
+        group = Group.objects.get(name="user")
+        user.groups.add(group)
+
         return user
         
       

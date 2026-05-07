@@ -11,6 +11,7 @@ from .utils import generate_and_send_2fa
 from .models import User
 from django.core.cache import cache
 import secrets
+from .permissions import IsAdminGroup
 
 class UserInfoView(RetrieveUpdateAPIView):
     
@@ -21,10 +22,12 @@ class UserInfoView(RetrieveUpdateAPIView):
         return self.request.user
     
 class AllUsersView(ListAPIView):
-
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [
+        IsAuthenticated,
+        IsAdminGroup
+    ]
 
 class UserRegistrationView(CreateAPIView):
 

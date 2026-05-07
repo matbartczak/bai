@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8000/";
+const API_BASE = "http://192.168.0.102:8000/";
 
 function redirect_register(){
     window.location.href = "/register.html";
@@ -18,7 +18,6 @@ function login() {
     const data = await res.json();
 
     if (res.ok) {
-        console.log(data)
         sessionStorage.setItem("temp_token", data.temp_token);
         window.location.href = "/verify.html";
     } else {
@@ -41,7 +40,6 @@ function login() {
 
 function verify() {
     const temp_token = sessionStorage.getItem("temp_token");
-    console.log(temp_token)
 
     fetch( API_BASE + 'verify/', {
         method: 'POST',
@@ -154,7 +152,7 @@ function get_users(){
   })
   .then(res => {
       if (res.status === 401) {
-          return refreshToken(); // 🔥 try refresh
+          return refreshToken();
       }
       return res.json();
   })
@@ -162,11 +160,15 @@ function get_users(){
     
     let html = "";
 
+
     data.forEach(user => {
+        const groups = user.groups.join(", ");
+
         html += `
             <div class="user-item">
             <strong>${user.username}</strong><br>
-            ${user.email}
+            ${user.email}<br>
+            <small>Groups: ${groups}</small>
             </div>
         `;
         });
