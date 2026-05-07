@@ -10,6 +10,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 from .utils import generate_and_send_2fa
 from .models import User
 from django.core.cache import cache
+import secrets
 
 class UserInfoView(RetrieveUpdateAPIView):
     
@@ -39,32 +40,29 @@ class LoginView(APIView):
 
     def post(self, request):
         serializer = LoginUserSerializer(data=request.data)
+
         if serializer.is_valid():
+
             user = serializer.validated_data
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
-            
-            response = Response({
-                "user": CustomUserSerializer(user).data},
-                                status=status.HTTP_200_OK)
-            
-            response.set_cookie(key="access_token", 
-                                value=access_token,
-                                httponly=True,
-                                secure=False, samesite="Lax")
-            
-            response.set_cookie(key="refresh_token",
-                                value=str(refresh),
-                                httponly=True,
-                                secure=False, samesite="Lax")
+            temp_token = secrets.token_urlsafe(32)
+
             generate_and_send_2fa(user)
 
+            cache.set(
+                f"temp_token_{temp_token}",
+                user.pk,
+                timeout=300
+            )
+
             return Response({
-                "message": "2FA code sent to your email",
-                "user_id": user.id
+                "message": "2FA code sent",
+                "temp_token": temp_token
             }, status=status.HTTP_200_OK)
-        
-        return Response( serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
         
 class LogoutView(APIView):
 
@@ -114,35 +112,76 @@ class CookieTokenRefreshView(TokenRefreshView):
             return Response({"error":"Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
 
 class Verify2FAView(APIView):
+
     authentication_classes = []
     permission_classes = []
 
     def post(self, request):
-        user_id = request.data.get("user_id")
+
+        temp_token = request.data.get("temp_token")
         code = request.data.get("code")
 
-        if not user_id or not code:
-            return Response({"error": "Missing user_id or code"}, status=status.HTTP_400_BAD_REQUEST)
+        if not temp_token or not code:
+            return Response(
+                {"error": "Missing temp_token or code"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
+        # Get user_id from cache
+        user_id = cache.get(f"temp_token_{temp_token}")
+
+        if not user_id:
+            return Response(
+                {"error": "Invalid or expired temp token"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Get user object
         try:
             user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        cache_key = f"2fa_{user.id}"
-        cached_code = cache.get(cache_key)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Verify 2FA code
+        cached_code = cache.get(f"2fa_{user.pk}")
 
         if cached_code != code:
-            return Response({"error": "Invalid or expired code"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid or expired code"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        # Remove code from cache
-        cache.delete(cache_key)
+        # Remove used data
+        cache.delete(f"2fa_{user.pk}")
+        cache.delete(f"temp_token_{temp_token}")
 
         # Generate JWT tokens
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
 
-        response = Response({"user": CustomUserSerializer(user).data}, status=status.HTTP_200_OK)
-        response.set_cookie("access_token", access_token, httponly=True, secure=False, samesite="Lax")
-        response.set_cookie("refresh_token", str(refresh), httponly=True, secure=False, samesite="Lax")
+        response = Response(
+            {"user": CustomUserSerializer(user).data},
+            status=status.HTTP_200_OK
+        )
+
+        response.set_cookie(
+            "access_token",
+            access_token,
+            httponly=True,
+            secure=False,
+            samesite="Lax"
+        )
+
+        response.set_cookie(
+            "refresh_token",
+            str(refresh),
+            httponly=True,
+            secure=False,
+            samesite="Lax"
+        )
+
         return response

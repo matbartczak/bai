@@ -18,7 +18,8 @@ function login() {
     const data = await res.json();
 
     if (res.ok) {
-        sessionStorage.setItem("user_id", data.user_id);
+        console.log(data)
+        sessionStorage.setItem("temp_token", data.temp_token);
         window.location.href = "/verify.html";
     } else {
         let errorText = "";
@@ -39,15 +40,15 @@ function login() {
 }
 
 function verify() {
-    const user_id = sessionStorage.getItem("user_id");
-    console.log(user_id)
+    const temp_token = sessionStorage.getItem("temp_token");
+    console.log(temp_token)
 
     fetch( API_BASE + 'verify/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: "include",
         body: JSON.stringify({
-            user_id : user_id,
+            temp_token : temp_token,
             code: document.getElementById("code").value,
         })
     })
@@ -55,6 +56,7 @@ function verify() {
     const data = await res.json();
 
     if (res.ok) {
+        sessionStorage.removeItem("temp_token")
         window.location.href = "/main.html";
     } else {
         let errorText = "";
