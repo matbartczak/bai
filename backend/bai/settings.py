@@ -147,6 +147,7 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://192.168.0.102:3000",
+    "http://172.20.10.2:3000",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -164,5 +165,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'matbartczak2000@gmail.com'
-EMAIL_HOST_PASSWORD = ''  # Gmail requires app password
+EMAIL_HOST_PASSWORD = 'byuy znmq umvp pisl'  # Gmail requires app password
 DEFAULT_FROM_EMAIL = 'matbartczak2000@gmail.com'

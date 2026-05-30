@@ -188,3 +188,45 @@ class Verify2FAView(APIView):
         )
 
         return response
+    
+class Resend2FAView(APIView):
+
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+
+        temp_token = request.data.get("temp_token")
+
+        if not temp_token:
+            return Response(
+                {"error": "Missing temp token"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Get user id from cache
+        user_id = cache.get(f"temp_token_{temp_token}")
+
+        if not user_id:
+            return Response(
+                {"error": "Session expired. Please login again."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Get user
+        try:
+            user = User.objects.get(pk=user_id)
+
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Generate and send new 2FA code
+        generate_and_send_2fa(user)
+
+        return Response(
+            {"message": "New 2FA code sent"},
+            status=status.HTTP_200_OK
+        )

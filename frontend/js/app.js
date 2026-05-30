@@ -1,41 +1,89 @@
-const API_BASE = "http://192.168.0.102:8000/";
+const API_BASE = "http://localhost:8000/";
 
 function redirect_register(){
     window.location.href = "/register.html";
 }
 
-function login() {
-    fetch( API_BASE + 'login/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: "include",
-        body: JSON.stringify({
-            username: document.getElementById("username").value,
-            password: document.getElementById("password").value
-        })
-    })
-    .then(async res => {
-    const data = await res.json();
+async function login() {
 
-    if (res.ok) {
-        sessionStorage.setItem("temp_token", data.temp_token);
-        window.location.href = "/verify.html";
-    } else {
-        let errorText = "";
+    const loginBtn = document.getElementById("login-btn");
+
+    const spinner = document.getElementById("spinner");
+
+    const loginText = document.getElementById("login-text");
+
+    // START LOADING
+    spinner.classList.remove("hidden");
+
+    loginText.textContent = "Loading...";
+
+    loginBtn.disabled = true;
+
+    try {
+
+        const response = await fetch(
+            API_BASE + 'login/',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+
+                credentials: "include",
+
+                body: JSON.stringify({
+                    username: document.getElementById("username").value,
+                    password: document.getElementById("password").value
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+
+            sessionStorage.setItem(
+                "temp_token",
+                data.temp_token
+            );
+
+            window.location.href = "/verify.html";
+
+        } else {
+
+            let errorText = "";
+
             Object.entries(data).forEach(([field, messages]) => {
-                
+
                 if (!Array.isArray(messages)) {
                     messages = [messages];
                 }
 
                 messages.forEach(msg => {
+
                     errorText += `${field} - ${msg}\n`;
                 });
             });
 
             alert(errorText);
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Network error");
+
+    } finally {
+
+        // STOP LOADING
+        spinner.classList.add("hidden");
+
+        loginText.textContent = "Login";
+
+        loginBtn.disabled = false;
     }
-    });
 }
 
 function verify() {
@@ -190,5 +238,39 @@ function refreshToken() {
             return null;
         }
         return null;
+    });
+}
+
+function resendCode() {
+    const temp_token = sessionStorage.getItem("temp_token");
+
+    fetch( API_BASE + 'resend/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: "include",
+        body: JSON.stringify({
+            temp_token : temp_token,
+        })
+    })
+    .then(async res => {
+    const data = await res.json();
+
+    if (res.ok) {
+        alert(data.message);
+    } else {
+        let errorText = "";
+            Object.entries(data).forEach(([field, messages]) => {
+                
+                if (!Array.isArray(messages)) {
+                    messages = [messages];
+                }
+
+                messages.forEach(msg => {
+                    errorText += `${field} - ${msg}\n`;
+                });
+            });
+
+            alert(errorText);
+    }
     });
 }
