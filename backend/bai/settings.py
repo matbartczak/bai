@@ -158,12 +158,12 @@ CACHES = {
     }
 }
 
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # for dev
-#DEFAULT_FROM_EMAIL = 'noreply@example.com'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'matbartczak2000@gmail.com'
-EMAIL_HOST_PASSWORD = 'byuy znmq umvp pisl'  # Gmail requires app password
-DEFAULT_FROM_EMAIL = 'matbartczak2000@gmail.com'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # for dev
+DEFAULT_FROM_EMAIL = 'noreply@example.com'
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
+#EMAIL_HOST_USER = 'matbartczak2000@gmail.com'
+#EMAIL_HOST_PASSWORD = 'byuy znmq umvp pisl'  # Gmail requires app password
+#DEFAULT_FROM_EMAIL = 'matbartczak2000@gmail.com'
