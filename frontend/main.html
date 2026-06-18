@@ -1,26 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
+
 <head>
-  <title>Index</title>
+  <meta charset="UTF-8">
+  <title>Panel użytkownika</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
 
 <div class="card">
-  <h1>User dashboard</h1>
+
+  <h1>👋 Cześć!</h1>
 
   <p class="subtitle">
-    Manage your account and users
+    Witaj w panelu użytkownika
   </p>
 
-  <button onclick="get_logged_user()">Logged User</button>
+  <!-- USER INFO -->
+  <div id="output" style="margin: 20px 0;"></div>
 
-  <button onclick="get_users()">Users</button>
+  <!-- ACTIONS -->
+<div class="btn-row">
+  <button onclick="get_logged_user()"
+  style="background:#bae6fd; color:#0f172a; border:none; padding:12px 22px; border-radius:12px; font-weight:600; cursor:pointer; min-width:160px;">
+  <span style="color:#1e3a8a;">👤</span> Moje dane
+  </button>
 
-  <button onclick="logout()">Logout</button>
-
-  <div id="output"></div>
+  <button onclick="get_users()"
+  style="background:#bae6fd; color:#0f172a; border:none; padding:12px 22px; border-radius:12px; font-weight:600; cursor:pointer; min-width:160px;">
+  <span style="color:#1e3a8a;">👥</span> Użytkownicy
+  </button>
 </div>
+
+  <!-- LOGOUT -->
+  <div style="margin-top: 30px;">
+  <button class="btn-darkblue" onclick="logout()">
+    ⏻ Wyloguj się
+  </button>
+  </div>
+
+</div>
+
 <script src="js/app.js"></script>
+
 </body>
 </html>
