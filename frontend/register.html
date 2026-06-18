@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 
 <head>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Register</title>
+    <title>Rejestracja</title>
 
     <link rel="stylesheet" href="css/styles.css">
 
@@ -22,16 +22,16 @@
 
         <div class="card">
 
-            <h1>Create Account</h1>
+            <h1>Utwórz konto</h1>
 
             <p class="subtitle">
-                Join the platform
+                Dołącz do platformy
             </p>
 
             <input
                 type="text"
                 id="username"
-                placeholder="Username"
+                placeholder="Nazwa użytkownika"
             >
 
             <input
@@ -43,24 +43,24 @@
             <input
                 type="password"
                 id="password"
-                placeholder="Password"
+                placeholder="Hasło"
             >
 
             <button class="primary-btn" onclick="register()">
-                Register
+                Zarejestruj się
             </button>
 
             <div class="divider"></div>
 
             <p class="bottom-text">
-                Already have an account?
+                Masz już konto?
             </p>
 
             <button
                 class="secondary-btn"
-                onclick="logout()"
+                onclick="redirect_login()"
             >
-                Back to Login
+                Wróć do logowania
             </button>
 
         </div>
