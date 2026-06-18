@@ -15,7 +15,7 @@ async function login() {
     // START LOADING
     spinner.classList.remove("hidden");
 
-    loginText.textContent = "Loading...";
+    loginText.textContent = "Logowanie..";
 
     loginBtn.disabled = true;
 
@@ -73,7 +73,7 @@ async function login() {
 
         console.error(error);
 
-        alert("Network error");
+        alert("Błąd połączenia z serwerem");
 
     } finally {
 
@@ -89,36 +89,45 @@ async function login() {
 function verify() {
     const temp_token = sessionStorage.getItem("temp_token");
 
-    fetch( API_BASE + 'verify/', {
+    const translations = {
+        "Invalid or expired code": "Nieprawidłowy lub wygasły kod",
+        "Missing temp_token or code": "Brak danych logowania",
+        "User not found": "Nie znaleziono użytkownika",
+        "Invalid or expired token": "Token wygasł lub jest nieprawidłowy"
+    };
+
+    fetch(API_BASE + 'verify/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: "include",
         body: JSON.stringify({
-            temp_token : temp_token,
+            temp_token: temp_token,
             code: document.getElementById("code").value,
         })
     })
     .then(async res => {
-    const data = await res.json();
+        const data = await res.json();
 
-    if (res.ok) {
-        sessionStorage.removeItem("temp_token")
-        window.location.href = "/main.html";
-    } else {
-        let errorText = "";
+        if (res.ok) {
+            sessionStorage.removeItem("temp_token");
+            window.location.href = "/main.html";
+        } else {
+            let errorText = "";
+
             Object.entries(data).forEach(([field, messages]) => {
-                
+
                 if (!Array.isArray(messages)) {
                     messages = [messages];
                 }
 
                 messages.forEach(msg => {
-                    errorText += `${field} - ${msg}\n`;
+                    const translatedMsg = translations[msg] || msg;
+                    errorText += `${field} - ${translatedMsg}\n`;
                 });
             });
 
             alert(errorText);
-    }
+        }
     });
 }
 
@@ -164,8 +173,9 @@ function logout() {
         credentials: "include"
   })
   .then(() => {
+    alert("Wylogowano pomyślnie");
     window.location.href = "/index.html";
-})
+  });
 }
 
 function get_logged_user(){
@@ -182,12 +192,11 @@ function get_logged_user(){
     
     let html = "";
     html += `
-        <div class="user-item">
-        <strong>${data.username}</strong><br>
-        ${data.email}
-        </div>
+    <div class="user-item">
+        <h3>Login: ${data.username}</h3>
+        <p>Email: ${data.email}</p>
+    </div>
     `;
-
 
     document.getElementById("output").innerHTML = html;
 
@@ -216,7 +225,7 @@ function get_users(){
             <div class="user-item">
             <strong>${user.username}</strong><br>
             ${user.email}<br>
-            <small>Groups: ${groups}</small>
+            <small>Grupy: ${groups}</small>
             </div>
         `;
         });
@@ -244,23 +253,24 @@ function refreshToken() {
 function resendCode() {
     const temp_token = sessionStorage.getItem("temp_token");
 
-    fetch( API_BASE + 'resend/', {
+    fetch(API_BASE + 'resend/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: "include",
         body: JSON.stringify({
-            temp_token : temp_token,
+            temp_token: temp_token,
         })
     })
     .then(async res => {
-    const data = await res.json();
+        const data = await res.json();
 
-    if (res.ok) {
-        alert(data.message);
-    } else {
-        let errorText = "";
+        if (res.ok) {
+            alert("Nowy kod 2FA został wysłany");
+        } else {
+            let errorText = "";
+
             Object.entries(data).forEach(([field, messages]) => {
-                
+
                 if (!Array.isArray(messages)) {
                     messages = [messages];
                 }
@@ -271,6 +281,10 @@ function resendCode() {
             });
 
             alert(errorText);
-    }
+        }
     });
+}
+
+function redirect_login() {
+    window.location.href = "/index.html";
 }
