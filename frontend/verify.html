@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 
 <head>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Verify 2FA</title>
+    <title>Weryfikacja 2FA</title>
 
     <link rel="stylesheet" href="css/styles.css">
 
@@ -22,31 +22,31 @@
 
         <div class="card">
 
-            <h1>Two-Factor Authentication</h1>
+            <h1>Weryfikacja dwuetapowa</h1>
 
             <p class="subtitle">
-                Enter the verification code sent to your email
+                Wprowadź kod weryfikacyjny wysłany na Twój adres e-mail
             </p>
 
             <input
                 type="text"
                 id="code"
-                placeholder="6-digit code"
+                placeholder="6-cyfrowy kod"
                 maxlength="6"
             >
 
             <button class="primary-btn" onclick="verify()">
-                Verify
+                Zatwierdź
             </button>
 
             <div class="divider"></div>
 
             <p class="bottom-text">
-                Didn't receive the code?
+                Nie otrzymałeś kodu?
             </p>
 
             <button class="secondary-btn" onclick="resendCode()">
-                Resend Code
+                Wyślij ponownie
             </button>
 
         </div>
