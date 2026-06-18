@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 
 <head>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Login</title>
+    <title>Logowanie</title>
 
     <link rel="stylesheet" href="css/styles.css">
 
@@ -22,37 +22,37 @@
 
         <div class="card">
 
-            <h1>Welcome Back</h1>
+            <h1>🔐 Witaj ponownie</h1>
 
             <p class="subtitle">
-                Sign in to your account
+                Zaloguj się na swoje konto
             </p>
 
             <input
                 type="text"
                 id="username"
-                placeholder="Username"
+                placeholder="Nazwa użytkownika"
             >
 
             <input
                 type="password"
                 id="password"
-                placeholder="Password"
+                placeholder="Hasło"
             >
 
             <button id="login-btn" class="primary-btn" onclick="login()">
-                <span id="login-text">Login</span>
+                <span id="login-text">Zaloguj się</span>
                 <div id="spinner" class="spinner hidden"></div>
             </button>
 
             <div class="divider"></div>
 
             <p class="bottom-text">
-                Don't have an account?
+                Nie masz konta?
             </p>
 
             <button class="secondary-btn" onclick="redirect_register()">
-                Create Account
+                Utwórz konto
             </button>
 
         </div>
